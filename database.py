@@ -1,5 +1,14 @@
 import sqlite3
 
+
+# Piste de reflexion pour adapter la database a plusieurs keywords
+#
+# 
+#
+#
+#
+
+
 class Database():
 
     GET_ALL_EXERCICES = """
