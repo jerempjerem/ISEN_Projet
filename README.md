@@ -21,3 +21,5 @@ Projet d'informatique ISEN 2023
 - Fonction qui genere le PDF
 - Fonction qui crée le GUI et qui permette d'interagir avec
 
+# Diagramme logique de la base de donnée
+![Diagramme logique de la base de donnée](db_projet_isen.png  "Diagramme logique de la base de donnée")
