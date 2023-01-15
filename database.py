@@ -1,14 +1,6 @@
 import sqlite3
 
 
-# Piste de reflexion pour adapter la database a plusieurs keywords
-#
-# 
-#
-#
-#
-
-
 class Database():
 
     GET_ALL_EXERCICES = """
@@ -33,11 +25,11 @@ class Database():
 
     def fetch(self, query: str) -> list:
         """
-            Fonction permettant de récupérer des données dans une database donnée.
+        Fonction permettant de récupérer des données dans une database donnée.
 
-            Cette fonction prend en argument une requête SQL que l'on veut exécuter, 
-            et renvoie les données récupérées grâce à cette requête.       
-        """
+        :param query: requête SQL que l'on veut exécuter
+        :return: renvoie les données récupérées grâce à cette requête
+        """ 
         if self.connect():
             cursor = self.connection.cursor()
             response = cursor.execute(query)
@@ -49,11 +41,10 @@ class Database():
         
     def edit(self, query: str):
         """
-            Fonction permettant de modifier une database donnée (INSERT, DELETE, CHANGE).
+        Fonction permettant de modifier une database donnée (INSERT, DELETE, CHANGE).
 
-            Cette fonction prend en argument une requête SQL que l'on veut exécuter, 
-            et ne renvoie rien.   
-        """
+        :param query: requête SQL que l'on veut exécuter
+        """ 
         if self.connect():
             cursor = self.connection.cursor()
             cursor.execute(query)
@@ -62,10 +53,11 @@ class Database():
 
     def connect(self) -> bool:
         """
-            Fonction permettant de se connecter à la database donnée.
+        Fonction permettant de se connecter à la database donnée.
 
-            Cette fonction ne prend pas d'arguments et renvoie un booléen
-        """
+        :return: renvoie un booléen True si nous sommes connecté, False sinon
+        """ 
+
         try:
             self.connection = sqlite3.connect(self.database_path)
             return True

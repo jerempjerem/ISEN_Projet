@@ -7,10 +7,16 @@ from ui_interface import *
 import sys
 import os
 
-DATABASE_PATH = 'db/database_test.db'
+DATABASE_PATH = 'db/database_test.db' # Chemin d'accès à la database à laquelle on veut se connecter
 database = Database(database_path=DATABASE_PATH)
 
 def fusionner_fichier_tex(fichiers_path: list, nom_du_fichier_final: str):
+    """
+    Fonction permettant de fusionner plusieurs fichiers .tex en un seul, elle crée un fichiers .tex comprenant l'esemble des fichiers fusionné
+
+    :param fichiers_path: liste des chemins d'accès aux fichier .tex que l'on veut fusionner
+    :param nom_du_fichier_final: nom du fichier final, fichier comportant la fusion de tous les fichiers .tex 
+    """ 
     final_tex = ""
     for index, fichier in enumerate(fichiers_path):
         with open(fichier, 'r') as tex_file:
@@ -28,17 +34,21 @@ def fusionner_fichier_tex(fichiers_path: list, nom_du_fichier_final: str):
         final_tex_file.write(final_tex)
 
 def tex_to_pdf(file_name: str):
+    """
+    Fonction permettant de créer un fichier .pdf à partir d'un fichier .tex
+
+    :param file_name: nom du fichier .tex que l'on veut convertir en .pdf
+    """ 
     os.system(f'pdflatex -interaction=batchmode -no-file-line-error -halt-on-error {file_name}.tex')
     os.remove(f"{file_name}.aux")
     os.remove(f"{file_name}.log")
-
+    
 
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
 
         # Initialization GUI
         self.load_auteurs()
@@ -55,6 +65,10 @@ class MainWindow(QMainWindow):
         self.loaded_exercices = []
 
     def fetch_exercices(self):
+        """
+        Fonction permettant de récuperer les exercices dans la database suivant les "filtres" utilisés puis de les affichées en appelant
+        la fonction self.load_exercice
+        """ 
         auteur = f'"{self.ui.auteurs_list.currentText()}"' if self.ui.auteurs_list.currentText() != "" else "AUTEURS.Nom"
         difficulte = f'"{self.ui.difficultes_list.currentText()}"' if self.ui.difficultes_list.currentText() != ""else "Difficulte"
         keyword = f'"{self.ui.keywors_list.currentText()}"' if self.ui.keywors_list.currentText() != "" else "KEYWORDS.Keyword"
@@ -65,14 +79,26 @@ class MainWindow(QMainWindow):
         [self.load_exercice(exercice) for exercice in result]
 
     def load_auteurs(self):
+        """
+        Fonction qui supprime les auteurs dans le menu déroulant et ajoute les auteurs de la database
+        """ 
         self.ui.auteurs_list.clear()
-        self.ui.auteurs_list.addItems(self._get_auteurs())
+        auteurs = [''] + [a[0] for a in database.fetch("SELECT Nom FROM AUTEURS")]
+        self.ui.auteurs_list.addItems(auteurs)
 
     def load_keywords(self):
+        """
+        Fonction qui supprime les keywords dans le menu déroulant et ajoute les keywords de la database
+        """ 
         self.ui.keywors_list.clear()
-        self.ui.keywors_list.addItems(self._get_keyword())
+        keywords = [''] + [k[0] for k in database.fetch("SELECT Keyword FROM KEYWORDS")]
+        self.ui.keywors_list.addItems(keywords)
 
     def load_exercice(self, exercice: list):
+        """
+        Fonction permettant d'ajouter un exercice au tableau de l'interface, et dans la variable self.loaded_exercices
+        :param exercice: Exercice que l'on veut ajouter comportant toutes les informations relative à cet exercice
+        """ 
         if exercice in self.loaded_exercices:
             return
         
@@ -119,6 +145,10 @@ class MainWindow(QMainWindow):
         self.ui.table.item(row, 6).setTextAlignment(Qt.AlignCenter)
 
     def generate(self):
+        """
+        Fonction permettant de generer un fichier pdf comportant tous les exercices compris dans le tableau de l'interface
+        à l'aide des deux fonctions fusionner_fichier_tex() et tex_to_pdf()
+        """
         if len(self.loaded_exercices) == 0:
             return
 
@@ -135,14 +165,12 @@ class MainWindow(QMainWindow):
         tex_to_pdf(final_name)
 
     def clean(self):
+        """
+        Fonction permettant de supprimer tous les exercices du tableau de l'interface et dans la variable self.loaded_exercices
+        """
         self.loaded_exercices = []
         self.ui.table.setRowCount(0)
 
-    def _get_auteurs(self):
-        return [''] + [a[0] for a in database.fetch("SELECT Nom FROM AUTEURS")]
-
-    def _get_keyword(self):
-        return [''] + [k[0] for k in database.fetch("SELECT Keyword FROM KEYWORDS")]
 
 
 app = QApplication(sys.argv)
