@@ -1,117 +1,105 @@
 # pyside2-uic interface.ui -o ui_interface.py
+# pdflatex -interaction=batchmode -no-file-line-error -halt-on-error test.tex
+# https://miktex.org/download pdflatex et installer package currfile
 
 from database import Database
+from ui_interface import *
 import sys
+import os
 
 DATABASE_PATH = 'db/database_test.db'
-
 database = Database(database_path=DATABASE_PATH)
 
-# 'INSERT INTO AUTEURS VALUES (NULL, "Luquet")'
-# 'INSERT INTO CORRIGES VALUES (NULL, "exo1.tex", 1)'
-# 'INSERT INTO KEYWORDS VALUES (NULL, "Calculs")'
-# 'INSERT INTO EXERCICES VALUES (NULL, "exo1.tex", NULL, 1, 2, 1, 4)'
+def fusionner_fichier_tex(fichiers_path: list, nom_du_fichier_final: str):
+    final_tex = ""
+    for index, fichier in enumerate(fichiers_path):
+        with open(fichier, 'r') as tex_file:
+            content = tex_file.read()
+            if index == 0:
+                content = content.replace('\end{document}', '')
+            else:
+                content = content.replace('\documentclass{article}', '')
+                content = content.replace(r'\begin{document}', '')
+                content = content.replace('\end{document}', '')
+            final_tex += content
+    final_tex += '\end{document}'
 
-AUTEURS = [''] + [a[0] for a in database.fetch("SELECT Nom FROM AUTEURS")]
-KEYWORDS = [''] + [k[0] for k in database.fetch("SELECT Keyword FROM KEYWORDS")]
-print(AUTEURS)
-print(KEYWORDS)
+    with open(f'{nom_du_fichier_final}.tex', 'w') as final_tex_file:
+        final_tex_file.write(final_tex)
 
-query = f"""
-    SELECT 
-        Ref_exo AS "Réf exo", 
-        EXERCICES.Fichier AS "Fichier", 
-        AUTEURS.Nom AS "Auteur",
-        Difficulte AS "Difficulté",
-        KEYWORDS.Keyword AS "Mot Clé", 
-        CORRIGES.Fichier AS "Corrigé",
-        AUTEURS_CORRIGES.Nom AS "Auteur Corrigé"
-    FROM EXERCICES
-    LEFT JOIN CORRIGES ON EXERCICES.CorrigeID_ext = CORRIGES.CorrigeID
-    INNER JOIN AUTEURS ON EXERCICES.AuteurID_ext = AUTEURS.AuteurID
-    INNER JOIN KEYWORDS ON EXERCICES.KeywordID_ext = KEYWORDS.KeywordID
-    LEFT JOIN AUTEURS AS AUTEURS_CORRIGES ON CORRIGES.AuteurID_ext = AUTEURS_CORRIGES.AuteurID
-    WHERE AUTEURS.Nom = '{AUTEURS[0]}'
-"""
-reslt = database.fetch(query)
-print(reslt)
+def tex_to_pdf(file_name: str):
+    os.system(f'pdflatex -interaction=batchmode -no-file-line-error -halt-on-error {file_name}.tex')
+    os.remove(f"{file_name}.aux")
+    os.remove(f"{file_name}.log")
 
 
-########################################################################
-from ui_interface import *
-from PySide2 import QtWidgets
-########################################################################
-
-########################################################################
-## MAIN WINDOW CLASS
-########################################################################
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        ########################################################################
-        
+
+
+        # Initialization GUI
         self.load_auteurs()
         self.load_keywords()
+
         self.ui.table.verticalHeader().setVisible(False)
         [self.ui.table.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch) for i in range(6)]
 
         self.ui.ajouter.clicked.connect(self.fetch_exercices)
-        self.corrige = False
+        self.ui.clean_btn.clicked.connect(self.clean)
+        self.ui.creation_btn.clicked.connect(self.generate)
+
+        # Autres Variables
+        self.loaded_exercices = []
 
     def fetch_exercices(self):
-        auteur = self.ui.auteurs_list.currentText() if self.ui.auteurs_list.currentText() != "" else None
-        difficulte = self.ui.difficultes_list.currentText() if self.ui.difficultes_list.currentText() != "" else None
-        keyword = self.ui.keywors_list.currentText() if self.ui.keywors_list.currentText() != "" else None
-        self.corrige = True if self.ui.corrige_checkbox.isChecked() else False
+        auteur = f'"{self.ui.auteurs_list.currentText()}"' if self.ui.auteurs_list.currentText() != "" else "AUTEURS.Nom"
+        difficulte = f'"{self.ui.difficultes_list.currentText()}"' if self.ui.difficultes_list.currentText() != ""else "Difficulte"
+        keyword = f'"{self.ui.keywors_list.currentText()}"' if self.ui.keywors_list.currentText() != "" else "KEYWORDS.Keyword"
 
-        if auteur or difficulte or keyword:
-            condition = "WHERE "
-            if auteur:
-                condition += f'AUTEURS.Nom = "{auteur}" '
-            if difficulte:
-                condition += f'AND Difficulte = {difficulte} '
-            if keyword:
-                condition += f'AND KEYWORDS.Keyword = "{keyword}"'
-        else:
-            condition = ""
+        condition = f"WHERE AUTEURS.Nom = {auteur} AND Difficulte = {difficulte} AND KEYWORDS.Keyword = {keyword}"
 
         result = database.fetch(database.GET_ALL_EXERCICES + condition)
         [self.load_exercice(exercice) for exercice in result]
 
-
     def load_auteurs(self):
         self.ui.auteurs_list.clear()
-        self.ui.auteurs_list.addItems(AUTEURS)
+        self.ui.auteurs_list.addItems(self._get_auteurs())
 
     def load_keywords(self):
         self.ui.keywors_list.clear()
-        self.ui.keywors_list.addItems(KEYWORDS)
+        self.ui.keywors_list.addItems(self._get_keyword())
 
     def load_exercice(self, exercice: list):
+        if exercice in self.loaded_exercices:
+            return
+        
         row = self.ui.table.rowCount()
         self.ui.table.insertRow(row)
+        self.loaded_exercices.append(exercice)
 
-        ref_exo = QTableWidgetItem(str(exercice[0]))
+        ref = exercice[0] if not exercice[1] else exercice[1]
+        ref_exo = QTableWidgetItem(str(ref))
         ref_exo.setFlags(Qt.NoItemFlags)
 
-        fichier = QTableWidgetItem(str(exercice[1]))
+        fichier = QTableWidgetItem(str(exercice[2]))
         fichier.setFlags(Qt.NoItemFlags)
 
-        auteur = QTableWidgetItem(str(exercice[2]))
+        auteur = QTableWidgetItem(str(exercice[3]))
         auteur.setFlags(Qt.NoItemFlags)
 
-        difficulte = QTableWidgetItem(str(exercice[3]))
+        difficulte = QTableWidgetItem(str(exercice[4]))
         difficulte.setFlags(Qt.NoItemFlags)
 
-        keywords = QTableWidgetItem(str(exercice[4]))
+        keywords = QTableWidgetItem(str(exercice[5]))
         keywords.setFlags(Qt.NoItemFlags)
 
-        corrige = QTableWidgetItem(str(exercice[5]))
+        corrige = QTableWidgetItem(str(exercice[6]))
         corrige.setFlags(Qt.NoItemFlags)
 
-        auteur_corrige = QTableWidgetItem(str(exercice[6]))
+        auteur_corrige = QTableWidgetItem(str(exercice[7]))
         auteur_corrige.setFlags(Qt.NoItemFlags)
 
         self.ui.table.setItem(row, 0, ref_exo)
@@ -129,6 +117,32 @@ class MainWindow(QMainWindow):
         self.ui.table.item(row, 4).setTextAlignment(Qt.AlignCenter)
         self.ui.table.item(row, 5).setTextAlignment(Qt.AlignCenter)
         self.ui.table.item(row, 6).setTextAlignment(Qt.AlignCenter)
+
+    def generate(self):
+        if len(self.loaded_exercices) == 0:
+            return
+
+        corrige = True if self.ui.corrige_checkbox.isChecked() else False
+        files = []
+        for exercice in self.loaded_exercices:
+            files.append(f"exercices/{exercice[2]}")
+            if corrige:
+                files.append(f"exercices/{exercice[6]}")
+        
+        print(files)
+        final_name = 'TD_Final'
+        fusionner_fichier_tex(files, final_name) 
+        tex_to_pdf(final_name)
+
+    def clean(self):
+        self.loaded_exercices = []
+        self.ui.table.setRowCount(0)
+
+    def _get_auteurs(self):
+        return [''] + [a[0] for a in database.fetch("SELECT Nom FROM AUTEURS")]
+
+    def _get_keyword(self):
+        return [''] + [k[0] for k in database.fetch("SELECT Keyword FROM KEYWORDS")]
 
 
 app = QApplication(sys.argv)

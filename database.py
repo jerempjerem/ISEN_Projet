@@ -13,6 +13,7 @@ class Database():
 
     GET_ALL_EXERCICES = """
         SELECT 
+            ExercicesId,
             Ref_exo, 
             EXERCICES.Fichier, 
             AUTEURS.Nom,

@@ -18,12 +18,13 @@ from Custom_Widgets.Widgets import QCustomStackedWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
+        MainWindow.setObjectName(u"Projet ISEN 2023")
         MainWindow.resize(1231, 738)
         MainWindow.setStyleSheet(u"* {\n"
-"	background-color: rgb(97, 139, 255);\n"
+"	/*background-color: rgb(207, 242, 255);*/\n"
+"	background-color: rgb(155, 207, 212);\n"
 "	border: None;\n"
+"	font-size: 9pt;\n"
 "}\n"
 "\n"
 "QPushButton {\n"
@@ -31,7 +32,34 @@ class Ui_MainWindow(object):
 "	padding-top: 4px;\n"
 "	padding-bottom: 4px;\n"
 "}\n"
-"")
+"\n"
+"QComboBox:focus{\n"
+"	border: 2px solid black;\n"
+"}\n"
+"\n"
+"QComboBox{\n"
+"	height: 20px;\n"
+"	border-radius: 14px;\n"
+"	background-color: rgb(100, 207, 212);\n"
+"	border: 2px solid rgb(100, 207, 212);\n"
+"	padding: 2px 10px;\n"
+"}\n"
+"\n"
+"\n"
+"QComboBox::drop-down{\n"
+"	border: None;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow{\n"
+"	width: 20px;\n"
+"	margin-right: 20px;\n"
+"}\n"
+"\n"
+"#frame_2 {\n"
+"	border: 2px solid black;\n"
+"	padding: 7px;\n"
+"	border-radius: 15px;\n"
+"}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
@@ -115,8 +143,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.frame_2 = QFrame(self.page_generation)
         self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setMinimumSize(QSize(0, 200))
-        self.frame_2.setStyleSheet(u"background-color: rgb(255, 147, 241);")
+        self.frame_2.setMinimumSize(QSize(0, 0))
+        self.frame_2.setStyleSheet(u"")
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.frame_2)
@@ -167,13 +195,7 @@ class Ui_MainWindow(object):
         self.corrige_checkbox = QCheckBox(self.frame_2)
         self.corrige_checkbox.setObjectName(u"corrige_checkbox")
 
-        self.gridLayout.addWidget(self.corrige_checkbox, 2, 1, 1, 1)
-
-        self.ajouter = QPushButton(self.frame_2)
-        self.ajouter.setObjectName(u"ajouter")
-        self.ajouter.setCursor(QCursor(Qt.PointingHandCursor))
-
-        self.gridLayout.addWidget(self.ajouter, 3, 1, 1, 1)
+        self.gridLayout.addWidget(self.corrige_checkbox, 3, 1, 1, 1)
 
 
         self.verticalLayout_4.addLayout(self.gridLayout)
@@ -216,15 +238,38 @@ class Ui_MainWindow(object):
 
         self.frame_3 = QFrame(self.page_generation)
         self.frame_3.setObjectName(u"frame_3")
-        self.frame_3.setStyleSheet(u"background-color: rgb(255, 255, 127);")
+        self.frame_3.setStyleSheet(u"QPushButton {\n"
+"	border: 2px solid black;\n"
+"	height: 22px;\n"
+"}")
         self.frame_3.setFrameShape(QFrame.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_6 = QHBoxLayout(self.frame_3)
+        self.horizontalLayout_6.setSpacing(90)
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_6.setContentsMargins(50, 10, 50, 5)
+        self.ajouter = QPushButton(self.frame_3)
+        self.ajouter.setObjectName(u"ajouter")
+
+        self.horizontalLayout_6.addWidget(self.ajouter)
+
+        self.clean_btn = QPushButton(self.frame_3)
+        self.clean_btn.setObjectName(u"clean_btn")
+        self.clean_btn.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.horizontalLayout_6.addWidget(self.clean_btn)
+
         self.creation_btn = QPushButton(self.frame_3)
         self.creation_btn.setObjectName(u"creation_btn")
+        font = QFont()
+        font.setFamily(u"MS Shell Dlg 2")
+        font.setPointSize(9)
+        font.setBold(False)
+        font.setWeight(50)
+        self.creation_btn.setFont(font)
+        self.creation_btn.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.horizontalLayout_6.addWidget(self.creation_btn, 0, Qt.AlignRight)
+        self.horizontalLayout_6.addWidget(self.creation_btn)
 
 
         self.verticalLayout_3.addWidget(self.frame_3)
@@ -269,7 +314,6 @@ class Ui_MainWindow(object):
         self.difficultes_list.setItemText(3, QCoreApplication.translate("MainWindow", u"3", None))
 
         self.corrige_checkbox.setText(QCoreApplication.translate("MainWindow", u"Corrig\u00e9", None))
-        self.ajouter.setText(QCoreApplication.translate("MainWindow", u"Ajouter", None))
         ___qtablewidgetitem = self.table.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"R\u00e9f exo", None));
         ___qtablewidgetitem1 = self.table.horizontalHeaderItem(1)
@@ -284,6 +328,8 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Corrig\u00e9", None));
         ___qtablewidgetitem6 = self.table.horizontalHeaderItem(6)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Auteur Corrig\u00e9", None));
-        self.creation_btn.setText(QCoreApplication.translate("MainWindow", u"Creation du fichier", None))
+        self.ajouter.setText(QCoreApplication.translate("MainWindow", u"Ajouter des exercices", None))
+        self.clean_btn.setText(QCoreApplication.translate("MainWindow", u"Nettoyer la table", None))
+        self.creation_btn.setText(QCoreApplication.translate("MainWindow", u"Cr\u00e9er le fichier", None))
     # retranslateUi
 
