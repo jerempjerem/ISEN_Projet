@@ -49,6 +49,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setWindowTitle('Projet ISEN 2023')
 
         # Initialization GUI
         self.load_auteurs()
@@ -64,6 +65,12 @@ class MainWindow(QMainWindow):
         # Autres Variables
         self.loaded_exercices = []
 
+        # test drag and drop
+        # add_file_list = self.ui.listWidget
+        # add_file_list.acceptDrops()
+        # add_file_list.dragEnterEvent()
+        
+        
     def fetch_exercices(self):
         """
         Fonction permettant de récuperer les exercices dans la database suivant les "filtres" utilisés puis de les affichées en appelant

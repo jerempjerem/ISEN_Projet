@@ -18,7 +18,8 @@ from Custom_Widgets.Widgets import QCustomStackedWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName(u"Projet ISEN 2023")
+        if not MainWindow.objectName():
+            MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(1231, 738)
         MainWindow.setStyleSheet(u"* {\n"
 "	/*background-color: rgb(207, 242, 255);*/\n"
@@ -277,6 +278,10 @@ class Ui_MainWindow(object):
         self.mainPages.addWidget(self.page_generation)
         self.add_page = QWidget()
         self.add_page.setObjectName(u"add_page")
+        self.listWidget = QListWidget(self.add_page)
+        self.listWidget.setObjectName(u"listWidget")
+        self.listWidget.setGeometry(QRect(60, 40, 391, 561))
+        self.listWidget.setStyleSheet(u"background-color: rgb(255, 170, 0);")
         self.mainPages.addWidget(self.add_page)
         self.delete_page = QWidget()
         self.delete_page.setObjectName(u"delete_page")
