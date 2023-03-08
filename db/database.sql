@@ -27,7 +27,13 @@ CREATE TABLE "EXERCICES" (
 	"Ref_exo"	TEXT,
 	"Difficulte"	TEXT NOT NULL,
 	"AuteurID_ext"	INTEGER NOT NULL,
-	"CorrigeID_ext"	INTEGER,
-	"KeywordID_ext"	INTEGER,
+	"CorrigeID_ext"	INTEGER
 	PRIMARY KEY("ExercicesID" AUTOINCREMENT)
+);
+
+CREATE TABLE "Keywords_Liaisons" (
+	"LiaisonId"	INTEGER,
+	"ExerciceId_ext"	INTEGER NOT NULL,
+	"KeywordId_ext"	INTEGER NOT NULL,
+	PRIMARY KEY("LiaisonId" AUTOINCREMENT)
 );

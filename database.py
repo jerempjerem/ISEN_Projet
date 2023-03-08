@@ -10,14 +10,20 @@ class Database():
             EXERCICES.Fichier, 
             AUTEURS.Nom,
             Difficulte,
-            KEYWORDS.Keyword, 
             CORRIGES.Fichier,
             AUTEURS_CORRIGES.Nom
         FROM EXERCICES
         LEFT JOIN CORRIGES ON EXERCICES.CorrigeID_ext = CORRIGES.CorrigeID
         INNER JOIN AUTEURS ON EXERCICES.AuteurID_ext = AUTEURS.AuteurID
-        INNER JOIN KEYWORDS ON EXERCICES.KeywordID_ext = KEYWORDS.KeywordID
         LEFT JOIN AUTEURS AS AUTEURS_CORRIGES ON CORRIGES.AuteurID_ext = AUTEURS_CORRIGES.AuteurID
+    """
+
+    GET_ALL_KEYWORD = """
+        SELECT Keyword
+        FROM EXERCICES
+        INNER JOIN Keywords_Liaisons ON EXERCICES.ExercicesID = Keywords_Liaisons.ExerciceId_ext
+        INNER JOIN KEYWORDS ON KEYWORDS.KeywordID = Keywords_Liaisons.KeywordId_ext
+        WHERE EXERCICES.Fichier = "exo2.tex"
     """
 
     def __init__(self, database_path: str):

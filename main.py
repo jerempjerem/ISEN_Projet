@@ -7,7 +7,7 @@ from ui_interface import *
 import sys
 import os
 
-DATABASE_PATH = 'db/database_test.db' # Chemin d'accès à la database à laquelle on veut se connecter
+DATABASE_PATH = 'db/database.db' # Chemin d'accès à la database à laquelle on veut se connecter
 database = Database(database_path=DATABASE_PATH)
 
 def fusionner_fichier_tex(fichiers_path: list, nom_du_fichier_final: str):
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
         difficulte = f'"{self.ui.difficultes_list.currentText()}"' if self.ui.difficultes_list.currentText() != ""else "Difficulte"
         keyword = f'"{self.ui.keywors_list.currentText()}"' if self.ui.keywors_list.currentText() != "" else "KEYWORDS.Keyword"
 
-        condition = f"WHERE AUTEURS.Nom = {auteur} AND Difficulte = {difficulte} AND KEYWORDS.Keyword = {keyword}"
+        condition = f"WHERE AUTEURS.Nom = {auteur} AND Difficulte = {difficulte}"
 
         result = database.fetch(database.GET_ALL_EXERCICES + condition)
         [self.load_exercice(exercice) for exercice in result]
@@ -126,13 +126,13 @@ class MainWindow(QMainWindow):
         difficulte = QTableWidgetItem(str(exercice[4]))
         difficulte.setFlags(Qt.NoItemFlags)
 
-        keywords = QTableWidgetItem(str(exercice[5]))
+        keywords = QTableWidgetItem(str("keyword"))
         keywords.setFlags(Qt.NoItemFlags)
 
-        corrige = QTableWidgetItem(str(exercice[6]))
+        corrige = QTableWidgetItem(str(exercice[5]))
         corrige.setFlags(Qt.NoItemFlags)
 
-        auteur_corrige = QTableWidgetItem(str(exercice[7]))
+        auteur_corrige = QTableWidgetItem(str(exercice[6]))
         auteur_corrige.setFlags(Qt.NoItemFlags)
 
         self.ui.table.setItem(row, 0, ref_exo)
